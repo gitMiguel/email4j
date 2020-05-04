@@ -4,6 +4,7 @@
  * Original work Copyright (c) 2016 Juan Desimoni
  * Modified work Copyright (c) 2017 yx91490
  * Modified work Copyright (c) 2017 Jonathan Hult
+ * Modified work Copyright (c) 2020 Miika Jukka
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -41,229 +42,238 @@ import static java.lang.String.format;
  */
 public abstract class Email {
 
-  /**
-   * @return the number is the relative position of this Email in its {@link Folder}.
-   *
-   * Valid message numbers start at 1. Emails that do not belong to any {@link Folder} (like newly composed or derived messages) have 0 as
-   * their message number.
-   */
-  public abstract int getNumber();
+	public enum ErrorState {
 
-  /**
-   * Get the unique id of this Email.
-   *
-   * @return this Email's id
-   */
-  public abstract long getId();
+		CANNOT_BUILD("Cannot build an Email with no "),
+		ERROR_FROM("FROM address(es)"),
+		ERROR_RECIPIENTS("TO, CC or BCC address(es). One of these must be present"),
+		ERROR_BODY("body");
+		
+		private final String state;
+		
+		private ErrorState(String state) {
+			this.state = state;
+		}
+		
+		public String asString() {
+			return state;
+		}
+	}
 
-  /**
-   * The subject of this {@link Email}.
-   */
-  private final String subject;
+	/**
+	 * The subject of this {@link Email}.
+	 */
+	private final String subject;
 
-  /**
-   * @return the subject of this Email.
-   */
-  public final String getSubject() {
-    return subject;
-  }
+	/**
+	 * The address(es) of the person(s) who sent this Email. This is usually just
+	 * one person but may be multiple.
+	 *
+	 * This field can be faked and does not confirm the person is who they claim to
+	 * be.
+	 */
+	private final ImmutableList<String> from;
 
-  /**
-   * The address(es) of the person(s) who sent this Email. This is usually just one person but may be multiple.
-   *
-   * This field can be faked and does not confirm the person is who they claim to be.
-   */
-  private final ImmutableList<String> from;
+	/**
+	 * The addresses to which this Email should reply.
+	 */
+	private final ImmutableList<String> replyTo;
 
-  /**
-   * Get the address(es) of the person(s) who sent this Email.
-   *
-   * @return a {@link ImmutableList} with the from addresses.
-   */
-  public ImmutableList<String> getFrom() {
-    return from;
-  }
+	/**
+	 * The recipient addresses of "To" (primary) type.
+	 */
+	private final ImmutableList<String> to;
 
-  /**
-   * The addresses to which this Email should reply.
-   */
-  private final ImmutableList<String> replyTo;
+	/**
+	 * The recipient addresses of "Cc" (carbon copy) type.
+	 */
+	private final ImmutableList<String> cc;
 
-  /**
-   * Get the addresses to which replies should be directed. This will usually be the same as fromAddresses, but may be different.
-   *
-   * @return all the recipient addresses of replyTo type.
-   */
-  public final ImmutableList<String> getReplyTo() {
-    return replyTo;
-  }
+	/**
+	 * The time where the email was sent.
+	 *
+	 * Different {@link Folder} implementations may assign this value or not.
+	 */
+	private final LocalDateTime sentDate;
 
-  /**
-   * The recipient addresses of "To" (primary) type.
-   */
-  private final ImmutableList<String> to;
+	/**
+	 * The body of this Email
+	 */
+	private final EmailBody body;
 
-  /**
-   * @return a {@link ImmutableList} with all the recipient addresses of "To" (primary) type.
-   */
-  public final ImmutableList<String> getTo() {
-    return to;
-  }
+	/**
+	 * A {@link ImmutableList} with all the {@link EmailAttachment}s of this Email.
+	 */
+	private final ImmutableList<EmailAttachment> attachments;
 
-  /**
-   * The recipient addresses of "Cc" (carbon copy) type.
-   */
-  private final ImmutableList<String> cc;
+	/**
+	 * The {@link Header}s of this Email.
+	 */
+	private final ImmutableList<Header> headers;
+	
+	/**
+	 * Creates a new instance.
+	 *
+	 * @param subject
+	 * @param sentDate
+	 * @param from
+	 * @param replyTo
+	 * @param to
+	 * @param cc
+	 * @param bcc
+	 * @param body
+	 * @param attachments
+	 * @param headers
+	 */
+	protected Email(final String subject, final LocalDateTime sentDate, final ImmutableList<String> from,
+			final ImmutableList<String> replyTo, final ImmutableList<String> to, final ImmutableList<String> cc,
+			final ImmutableList<String> bcc, final EmailBody body, final ImmutableList<EmailAttachment> attachments,
+			final ImmutableList<Header> headers) {
 
-  /**
-   * @return a {@link ImmutableList} with all the recipient addresses of "Cc" (carbon copy) type.
-   */
-  public ImmutableList<String> getCc() {
-    return cc;
-  }
+		if (from.isEmpty()) {
+			throw new IllegalStateException(format("%s%s", ErrorState.CANNOT_BUILD, ErrorState.ERROR_FROM));
+		}
 
-  /**
-   * @return a {@link ImmutableList} with all the recipient addresses of "Bcc" (blind carbon copy) type.
-   */
-  public abstract ImmutableList<String> getBcc();
+		if (body == null) {
+			throw new IllegalStateException(format("%s%s", ErrorState.CANNOT_BUILD, ErrorState.ERROR_BODY));
+		}
 
-  /**
-   * The time where the email was sent.
-   *
-   * Different {@link Folder} implementations may assign this value or not.
-   */
-  private final LocalDateTime sentDate;
+		// For an OutgoingEmail - TO, CC, or BCC must be present
+		if (getClass().equals(OutgoingEmail.class)) {
 
-  /**
-   * Get the {@link LocalDateTime} this Email was sent.
-   *
-   * @return the {@link LocalDateTime} this Email was sent.
-   */
-  public final Optional<LocalDateTime> getSentDate() {
-    return Optional.ofNullable(sentDate);
-  }
+			if (to.isEmpty() && cc.isEmpty() && bcc.isEmpty()) {
+				throw new IllegalStateException(format("%s%s", ErrorState.CANNOT_BUILD, ErrorState.ERROR_RECIPIENTS));
+			}
+		}
 
-  /**
-   * Get the {@link LocalDateTime} this Email was received.
-   *
-   * @return the {@link LocalDateTime} this Email was received.
-   */
-  public abstract Optional<LocalDateTime> getReceivedDate();
+		// For a StoredEmail - TO, CC and BCC may all be empty. This is because the TO
+		// and CC may have originally been
+		// blank and we received it because we were BCC'd.
 
-  /**
-   * @return an {@link EmailFlags} containing the flags set in the Email.
-   */
-  public abstract EmailFlags getFlags();
+		// TODO: should check RFCs to determine what can and cannot be empty/null here -
+		// e.g. could headers ever be empty
 
-  /**
-   * The body of this Email
-   */
-  private final EmailBody body;
+		this.subject = subject == null ? NO_SUBJECT : subject;
+		this.sentDate = sentDate;
+		this.from = from;
+		this.replyTo = replyTo;
+		this.to = to;
+		this.cc = cc;
+		this.body = body;
+		this.attachments = attachments;
+		this.headers = headers;
+	}
 
-  /**
-   * Get the body of this Email.
-   *
-   * @return the {@link EmailBody} of this Email.
-   */
-  public final EmailBody getBody() {
-    return body;
-  }
+	/**
+	 * @return the number is the relative position of this Email in its
+	 *         {@link Folder}.
+	 *
+	 *         Valid message numbers start at 1. Emails that do not belong to any
+	 *         {@link Folder} (like newly composed or derived messages) have 0 as
+	 *         their message number.
+	 */
+	public abstract int getNumber();
 
-  /**
-   * A {@link ImmutableList} with all the {@link EmailAttachment}s of this Email.
-   */
-  private final ImmutableList<EmailAttachment> attachments;
+	/**
+	 * Get the unique id of this Email.
+	 *
+	 * @return this Email's id
+	 */
+	public abstract long getId();
 
-  /**
-   * Get the attachments of this Email. An empty {@link ImmutableList} is returned when there are no {@link EmailAttachment}s.
-   *
-   * @return a {@link ImmutableList} with the {@link EmailAttachment}s of this Email.
-   */
-  public final ImmutableList<EmailAttachment> getAttachments() {
-    return attachments;
-  }
+	/**
+	 * @return the subject of this Email.
+	 */
+	public final String getSubject() {
+		return subject;
+	}
 
-  /**
-   * The {@link Header}s of this Email.
-   */
-  private final ImmutableList<Header> headers;
+	/**
+	 * Get the address(es) of the person(s) who sent this Email.
+	 *
+	 * @return a {@link ImmutableList} with the from addresses.
+	 */
+	public ImmutableList<String> getFrom() {
+		return from;
+	}
 
-  /**
-   * @return all the @{link Header}s of this Email.
-   */
-  public final ImmutableList<Header> getHeaders() {
-    return headers;
-  }
+	/**
+	 * Get the addresses to which replies should be directed. This will usually be
+	 * the same as fromAddresses, but may be different.
+	 *
+	 * @return all the recipient addresses of replyTo type.
+	 */
+	public final ImmutableList<String> getReplyTo() {
+		return replyTo;
+	}
 
-  /**
-   * Creates a new instance.
-   *
-   * @param subject
-   * @param sentDate
-   * @param from
-   * @param replyTo
-   * @param to
-   * @param cc
-   * @param bcc
-   * @param body
-   * @param attachments
-   * @param headers
-   */
-  protected Email(final String subject,
-                  final LocalDateTime sentDate,
-                  final ImmutableList<String> from,
-                  final ImmutableList<String> replyTo,
-                  final ImmutableList<String> to,
-                  final ImmutableList<String> cc,
-                  final ImmutableList<String> bcc,
-                  final EmailBody body,
-                  final ImmutableList<EmailAttachment> attachments,
-                  final ImmutableList<Header> headers) {
+	/**
+	 * @return a {@link ImmutableList} with all the recipient addresses of "To"
+	 *         (primary) type.
+	 */
+	public final ImmutableList<String> getTo() {
+		return to;
+	}
 
-    if (from.isEmpty()) {
-      throw new IllegalStateException(format("%s%s", CANNOT_BUILD, ERROR_FROM));
-    }
+	/**
+	 * @return a {@link ImmutableList} with all the recipient addresses of "Cc"
+	 *         (carbon copy) type.
+	 */
+	public ImmutableList<String> getCc() {
+		return cc;
+	}
 
-    if (body == null) {
-      throw new IllegalStateException(format("%s%s", CANNOT_BUILD, ERROR_BODY));
-    }
+	/**
+	 * @return a {@link ImmutableList} with all the recipient addresses of "Bcc"
+	 *         (blind carbon copy) type.
+	 */
+	public abstract ImmutableList<String> getBcc();
 
-    // For an OutgoingEmail - TO, CC, or BCC must be present
-    if (getClass().equals(OutgoingEmail.class)) {
+	/**
+	 * Get the {@link LocalDateTime} this Email was sent.
+	 *
+	 * @return the {@link LocalDateTime} this Email was sent.
+	 */
+	public final Optional<LocalDateTime> getSentDate() {
+		return Optional.ofNullable(sentDate);
+	}
 
-      if (to.isEmpty() && cc.isEmpty() && bcc.isEmpty()) {
-        throw new IllegalStateException(format("%s%s", CANNOT_BUILD, ERROR_RECIPIENTS));
-      }
-    }
+	/**
+	 * Get the {@link LocalDateTime} this Email was received.
+	 *
+	 * @return the {@link LocalDateTime} this Email was received.
+	 */
+	public abstract Optional<LocalDateTime> getReceivedDate();
 
-    // For a StoredEmail - TO, CC and BCC may all be empty. This is because the TO and CC may have originally been
-    // blank and we received it because we were BCC'd.
+	/**
+	 * @return an {@link EmailFlags} containing the flags set in the Email.
+	 */
+	public abstract EmailFlags getFlags();
 
-    //TODO: should check RFCs to determine what can and cannot be empty/null here - e.g. could headers ever be empty
+	/**
+	 * Get the body of this Email.
+	 *
+	 * @return the {@link EmailBody} of this Email.
+	 */
+	public final EmailBody getBody() {
+		return body;
+	}
 
-    if (subject == null) {
-      this.subject = NO_SUBJECT;
-    } else {
-      this.subject = subject;
-    }
+	/**
+	 * Get the attachments of this Email. An empty {@link ImmutableList} is returned
+	 * when there are no {@link EmailAttachment}s.
+	 *
+	 * @return a {@link ImmutableList} with the {@link EmailAttachment}s of this
+	 *         Email.
+	 */
+	public final ImmutableList<EmailAttachment> getAttachments() {
+		return attachments;
+	}
 
-    this.sentDate = sentDate;
-
-    this.from = from;
-    this.replyTo = replyTo;
-
-    this.to = to;
-    this.cc = cc;
-
-    this.body = body;
-
-    this.attachments = attachments;
-
-    this.headers = headers;
-  }
-
-  private static final String CANNOT_BUILD = "Cannot build an Email with no ";
-  public static final String ERROR_FROM = "FROM address(es)";
-  public static final String ERROR_RECIPIENTS = "TO, CC or BCC address(es). One of these must be present";
-  public static final String ERROR_BODY = "body";
+	/**
+	 * @return all the @{link Header}s of this Email.
+	 */
+	public final ImmutableList<Header> getHeaders() {
+		return headers;
+	}
 }

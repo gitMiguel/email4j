@@ -26,6 +26,7 @@
 package desi.juan.email.api;
 
 import com.google.common.base.Charsets;
+
 import desi.juan.email.internal.OutgoingEmail;
 import org.junit.Before;
 import org.junit.Rule;
@@ -77,7 +78,7 @@ public class BuilderTestCase {
   @Test
   public void noFrom() {
     ee.expect(IllegalStateException.class);
-    ee.expectMessage(containsString(Email.ERROR_FROM));
+    ee.expectMessage(containsString(Email.ErrorState.ERROR_FROM.asString()));
     builder
         .to(PERSON_1)
         .body(EMAIL_CONTENT)
@@ -87,7 +88,7 @@ public class BuilderTestCase {
   @Test
   public void noBody() {
     ee.expect(IllegalStateException.class);
-    ee.expectMessage(containsString(Email.ERROR_BODY));
+    ee.expectMessage(containsString(Email.ErrorState.ERROR_BODY.asString()));
     builder
         .to(PERSON_1)
         .from(PERSON_2)
@@ -97,7 +98,7 @@ public class BuilderTestCase {
   @Test
   public void noTo() {
     ee.expect(IllegalStateException.class);
-    ee.expectMessage(containsString(Email.ERROR_RECIPIENTS));
+    ee.expectMessage(containsString(Email.ErrorState.ERROR_RECIPIENTS.asString()));
     builder
         .from(EMAIL_SUBJECT)
         .body(EMAIL_CONTENT)

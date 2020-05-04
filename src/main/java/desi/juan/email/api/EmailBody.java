@@ -4,6 +4,7 @@
  * Original work Copyright (c) 2016 Juan Desimoni
  * Modified work Copyright (c) 2017 yx91490
  * Modified work Copyright (c) 2017 Jonathan Hult
+ * Modified work Copyright (c) 2020 Miika Jukka
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -36,46 +37,46 @@ import static desi.juan.email.api.EmailConstants.DEFAULT_CONTENT_TYPE;
  */
 public class EmailBody extends EmailData {
 
-  /**
-   * @return the body content of the {@link Email} as a {@link String} value.
-   */
-  @Override
-  public String getContent() {
-    return (String) super.getContent();
-  }
+	/**
+	 * @return the body content of the {@link Email} as a {@link String} value.
+	 */
+	@Override
+	public String getContent() {
+		return (String) super.getContent();
+	}
 
-  /**
-   * @param content
-   * @param charset
-   * @param format
-   */
-  public EmailBody(final String content, final Charset charset, final String format) {
-    super(content, charset, format);
-  }
+	/**
+	 * @param content
+	 * @param charset
+	 * @param format
+	 */
+	public EmailBody(final String content, final Charset charset, final String format) {
+		super(content, charset, format);
+	}
 
-  /**
-   * @param content
-   * @param contentType
-   */
-  public EmailBody(final String content, final String contentType) {
-    super(content, contentType);
-  }
+	/**
+	 * @param content
+	 * @param contentType
+	 */
+	public EmailBody(final String content, final String contentType) {
+		super(content, contentType);
+	}
 
-  /**
-   * Body with DEFAULT_CONTENT_TYPE.
-   *
-   * @see #EmailBody(String, String)
-   */
-  public EmailBody(final String content) {
-    super(content, DEFAULT_CONTENT_TYPE);
-  }
+	/**
+	 * Body with DEFAULT_CONTENT_TYPE.
+	 *
+	 * @see #EmailBody(String, String)
+	 */
+	public EmailBody(final String content) {
+		super(content, DEFAULT_CONTENT_TYPE);
+	}
 
-  /**
-   * Empty body with DEFAULT_CONTENT_TYPE.
-   *
-   * @see #EmailBody(String)
-   */
-  public EmailBody() {
-    this("");
-  }
+	/**
+	 * Empty body with DEFAULT_CONTENT_TYPE.
+	 *
+	 * @see #EmailBody(String)
+	 */
+	public EmailBody() {
+		this("");
+	}
 }
