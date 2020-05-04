@@ -35,54 +35,54 @@ import javax.mail.Header;
  */
 public final class EmailAttachment extends EmailData {
 
-	/**
-	 * The name of the attachment.
-	 */
-	private final String id;
+    /**
+     * The name of the attachment.
+     */
+    private final String id;
 
-	/**
-	 * The {@link Header}s for this attachment.
-	 */
-	private final ImmutableList<Header> headers;
+    /**
+     * The {@link Header}s for this attachment.
+     */
+    private final ImmutableList<Header> headers;
 
-	/**
-	 * Creates a new instance. {@link Header}s will be empty.
-	 *
-	 * @param id
-	 * @param content
-	 * @param contentType
-	 */
-	public EmailAttachment(final String id, final Object content, final String contentType) {
-		this(id, content, contentType, ImmutableList.of());
-	}
+    /**
+     * Creates a new instance. {@link Header}s will be empty.
+     *
+     * @param id
+     * @param content
+     * @param contentType
+     */
+    public EmailAttachment(final String id, final Object content, final String contentType) {
+        this(id, content, contentType, ImmutableList.of());
+    }
 
-	/**
-	 * Creates a new instance.
-	 *
-	 * @param id
-	 * @param content
-	 * @param contentType
-	 * @param headers
-	 */
-	public EmailAttachment(final String id, final Object content, final String contentType,
-			final ImmutableList<Header> headers) {
-		super(content, contentType);
-		this.headers = headers;
-		this.id = id;
-	}
+    /**
+     * Creates a new instance.
+     *
+     * @param id
+     * @param content
+     * @param contentType
+     * @param headers
+     */
+    public EmailAttachment(final String id, final Object content, final String contentType,
+            final ImmutableList<Header> headers) {
+        super(content, contentType);
+        this.headers = headers;
+        this.id = id;
+    }
 
-	/**
-	 * @return The name of the attachment.
-	 */
-	public String getId() {
-		return id;
-	}
+    /**
+     * @return The name of the attachment.
+     */
+    public String getId() {
+        return id;
+    }
 
-	/**
-	 * @return a {@link ImmutableList} of {@link Header}s that are specific for this
-	 *         attachment. Examples: Content-Type or Content-Disposition.
-	 */
-	public ImmutableList<Header> getHeaders() {
-		return headers;
-	}
+    /**
+     * @return a {@link ImmutableList} of {@link Header}s that are specific for this
+     *         attachment. Examples: Content-Type or Content-Disposition.
+     */
+    public ImmutableList<Header> getHeaders() {
+        return headers;
+    }
 }

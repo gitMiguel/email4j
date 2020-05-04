@@ -35,59 +35,59 @@ import java.nio.charset.Charset;
  */
 public final class EmailConstants {
 
-	/**
-	 * No subject.
-	 */
-	public static final String NO_SUBJECT = "[No Subject]";
+    /**
+     * No subject.
+     */
+    public static final String NO_SUBJECT = "[No Subject]";
 
-	/**
-	 * Default folder name for all the mailboxes.
-	 */
-	public static final String INBOX_FOLDER = "INBOX";
+    /**
+     * Default folder name for all the mailboxes.
+     */
+    public static final String INBOX_FOLDER = "INBOX";
 
-	/**
-	 * Defines all the multipart content types.
-	 */
-	public static final String MULTIPART = "multipart/*";
+    /**
+     * Defines all the multipart content types.
+     */
+    public static final String MULTIPART = "multipart/*";
 
-	/**
-	 * Defines all the text content types.
-	 */
-	public static final String TEXT = "text/*";
+    /**
+     * Defines all the text content types.
+     */
+    public static final String TEXT = "text/*";
 
-	/**
-	 * Plain text format.
-	 */
-	public static final String TEXT_PLAIN = "text/plain";
+    /**
+     * Plain text format.
+     */
+    public static final String TEXT_PLAIN = "text/plain";
 
-	/**
-	 * HTML format.
-	 */
-	public static final String TEXT_HTML = "text/html";
+    /**
+     * HTML format.
+     */
+    public static final String TEXT_HTML = "text/html";
 
-	/**
-	 * The default charset.
-	 */
-	public static final Charset DEFAULT_CHARSET = Charsets.US_ASCII;
+    /**
+     * The default charset.
+     */
+    public static final Charset DEFAULT_CHARSET = Charsets.US_ASCII;
 
-	/**
-	 * The default content type.
-	 */
-	public static final String DEFAULT_CONTENT_TYPE = TEXT_PLAIN + "; charset=" + DEFAULT_CHARSET;
+    /**
+     * The default content type.
+     */
+    public static final String DEFAULT_CONTENT_TYPE = TEXT_PLAIN + "; charset=" + DEFAULT_CHARSET;
 
-	/**
-	 * Default port value for IMAP servers.
-	 */
-	public static final String DEFAULT_IMAP_PORT = "143";
+    /**
+     * Default port value for IMAP servers.
+     */
+    public static final String DEFAULT_IMAP_PORT = "143";
 
-	/**
-	 * Default port value for IMAPS servers.
-	 */
-	public static final String DEFAULT_IMAPS_PORT = "993";
+    /**
+     * Default port value for IMAPS servers.
+     */
+    public static final String DEFAULT_IMAPS_PORT = "993";
 
-	/**
-	 * Hide constructor.
-	 */
-	private EmailConstants() {
-	}
+    /**
+     * Hide constructor.
+     */
+    private EmailConstants() {
+    }
 }
