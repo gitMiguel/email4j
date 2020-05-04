@@ -1,4 +1,4 @@
-# Email4J [![Actions Status](https://xxx.execute-api.us-west-2.amazonaws.com/production/badge/gitMiguel/email4j?branch=gitMiguel-development)](https://xxx.execute-api.us-west-2.amazonaws.com/production/results/gitMiguel/email4j)
+# Email4J ![Java CI with Maven](https://github.com/gitMiguel/email4j/workflows/Java%20CI%20with%20Maven/badge.svg?branch=gitMiguel-development)
 
 
 Email4J (Email for Java) is a high level java library built on top of the javax.mail api for managing and sending emails, without the necessity of knowing 
