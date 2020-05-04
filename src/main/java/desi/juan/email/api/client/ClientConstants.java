@@ -26,39 +26,35 @@
  */
 package desi.juan.email.api.client;
 
-import desi.juan.email.api.Email;
-import desi.juan.email.api.client.configuration.ClientConfiguration;
-import desi.juan.email.internal.commands.SendOperations;
-import desi.juan.email.internal.connection.SenderConnection;
-
-import static desi.juan.email.internal.EmailProtocol.SMTP;
-import static desi.juan.email.internal.EmailProtocol.SMTPS;
-
-/**
- * Encapsulates all the functionality necessary to send emails through an SMTP
- * server.
- *
- * This class takes care of all low level details of interacting with an SMTP
- * server and provides a convenient higher level interface.
- */
-public class SmtpClient extends SenderConnection implements SendOperations {
+public class ClientConstants {
+    
+    /**
+     * Default port value for IMAP servers.
+     */
+    public static final String DEFAULT_IMAP_PORT = "143";
 
     /**
-     * {@inheritDoc}
+     * Default port value for IMAPS servers.
      */
-    public SmtpClient(final String username, final String password, final String host, final int port,
-            final ClientConfiguration config) {
-        super(config.getTlsConfig().isPresent() ? SMTPS : SMTP, username, password, host, port,
-                config.getConnectionTimeout(), config.getReadTimeout(), config.getWriteTimeout(),
-                config.getProperties());
-    }
+    public static final String DEFAULT_IMAPS_PORT = "993";
 
     /**
-     * @param email
-     * @see SendOperations#send(SenderConnection, Email)
+     * Default port value for POP3 servers.
      */
-    // TODO: should this be OutgoingEmail
-    public void send(final Email email) {
-        send(this, email);
-    }
+    public static final String DEFAULT_POP3_PORT = "110";
+
+    /**
+     * Default port value for POP3S servers.
+     */
+    public static final String DEFAULT_POP3S_PORT = "995";
+    
+    /**
+     * Default port value for SMTP servers.
+     */
+    public static final String DEFAULT_SMTP_PORT = "25";
+
+    /**
+     * Default port value for SMTPS servers.
+     */
+    public static final String DEFAULT_SMTPS_PORT = "587";
 }

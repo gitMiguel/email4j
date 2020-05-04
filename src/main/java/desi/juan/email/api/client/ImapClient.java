@@ -4,6 +4,7 @@
  * Original work Copyright (c) 2016 Juan Desimoni
  * Modified work Copyright (c) 2017 yx91490
  * Modified work Copyright (c) 2017 Jonathan Hult
+ * Modified work Copyright (c) 2020 Miika Jukka
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +26,6 @@
  */
 package desi.juan.email.api.client;
 
-
 import desi.juan.email.api.client.configuration.ClientConfiguration;
 import desi.juan.email.internal.commands.DeleteOperations;
 import desi.juan.email.internal.commands.FolderOperations;
@@ -44,45 +44,26 @@ import static java.lang.String.format;
  */
 public class ImapClient extends MailboxManagerConnection implements DeleteOperations, FolderOperations {
 
-  /**
-   * Default port value for IMAP servers.
-   */
-  public static final String DEFAULT_IMAP_PORT = "143";
-
-  /**
-   * Default port value for IMAPS servers.
-   */
-  public static final String DEFAULT_IMAPS_PORT = "993";
-
-  /**
-   * {@inheritDoc}
-   */
-  public ImapClient(final String username,
-                    final String password,
-                    final String host,
-                    final int port,
-                    final ClientConfiguration config) {
-    super(config.getTlsConfig().isPresent() ? IMAPS : IMAP,
-        username,
-        password,
-        host,
-        port,
-        config.getConnectionTimeout(),
-        config.getReadTimeout(),
-        config.getWriteTimeout(),
-        config.getProperties());
-  }
-
-  /**
-   * @param folder
-   * @param openMode
-   * @return
-   */
-  public UIDFolder getUIDFolder(final String folder, final int openMode) {
-    final Folder uidFolder = getFolder(folder, openMode);
-    if (uidFolder instanceof UIDFolder) {
-      return (UIDFolder) uidFolder;
+    /**
+     * {@inheritDoc}
+     */
+    public ImapClient(final String username, final String password, final String host, final int port,
+            final ClientConfiguration config) {
+        super(config.getTlsConfig().isPresent() ? IMAPS : IMAP, username, password, host, port,
+                config.getConnectionTimeout(), config.getReadTimeout(), config.getWriteTimeout(),
+                config.getProperties());
     }
-    throw new EmailException(format("the specified folder:[%s] does not support fetching emails by id", folder));
-  }
+
+    /**
+     * @param folder
+     * @param openMode
+     * @return
+     */
+    public UIDFolder getUIDFolder(final String folder, final int openMode) {
+        final Folder uidFolder = getFolder(folder, openMode);
+        if (uidFolder instanceof UIDFolder) {
+            return (UIDFolder) uidFolder;
+        }
+        throw new EmailException(format("the specified folder:[%s] does not support fetching emails by id", folder));
+    }
 }

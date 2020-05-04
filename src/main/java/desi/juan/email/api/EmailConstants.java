@@ -76,16 +76,6 @@ public final class EmailConstants {
     public static final String DEFAULT_CONTENT_TYPE = TEXT_PLAIN + "; charset=" + DEFAULT_CHARSET;
 
     /**
-     * Default port value for IMAP servers.
-     */
-    public static final String DEFAULT_IMAP_PORT = "143";
-
-    /**
-     * Default port value for IMAPS servers.
-     */
-    public static final String DEFAULT_IMAPS_PORT = "993";
-
-    /**
      * Hide constructor.
      */
     private EmailConstants() {
