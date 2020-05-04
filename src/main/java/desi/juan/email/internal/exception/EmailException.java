@@ -4,6 +4,7 @@
  * Original work Copyright (c) 2016 Juan Desimoni
  * Modified work Copyright (c) 2017 yx91490
  * Modified work Copyright (c) 2017 Jonathan Hult
+ * Modified work Copyright (c) 2020 Miika Jukka
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,15 +28,17 @@ package desi.juan.email.internal.exception;
 
 public class EmailException extends RuntimeException {
 
-  public EmailException(final String message) {
-    super(message);
-  }
+	private static final long serialVersionUID = 1L;
 
-  public EmailException(final Throwable cause) {
-    super(cause);
-  }
+	public EmailException(final String message) {
+		super(message);
+	}
 
-  public EmailException(final String message, final Throwable cause) {
-    super(message, cause);
-  }
+	public EmailException(final Throwable cause) {
+		super(cause);
+	}
+
+	public EmailException(final String message, final Throwable cause) {
+		super(message, cause);
+	}
 }
