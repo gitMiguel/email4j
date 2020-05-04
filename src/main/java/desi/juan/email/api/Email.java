@@ -44,7 +44,6 @@ public abstract class Email {
 
 	public enum ErrorState {
 
-		CANNOT_BUILD("Cannot build an Email with no "),
 		ERROR_FROM("FROM address(es)"),
 		ERROR_RECIPIENTS("TO, CC or BCC address(es). One of these must be present"),
 		ERROR_BODY("body");
@@ -131,18 +130,18 @@ public abstract class Email {
 			final ImmutableList<Header> headers) {
 
 		if (from.isEmpty()) {
-			throw new IllegalStateException(format("%s%s", ErrorState.CANNOT_BUILD, ErrorState.ERROR_FROM));
+			throw new IllegalStateException(format("Cannot build an Email with no %s", ErrorState.ERROR_FROM.asString()));
 		}
 
 		if (body == null) {
-			throw new IllegalStateException(format("%s%s", ErrorState.CANNOT_BUILD, ErrorState.ERROR_BODY));
+			throw new IllegalStateException(format("Cannot build an Email with no %s", ErrorState.ERROR_BODY.asString()));
 		}
 
 		// For an OutgoingEmail - TO, CC, or BCC must be present
 		if (getClass().equals(OutgoingEmail.class)) {
 
 			if (to.isEmpty() && cc.isEmpty() && bcc.isEmpty()) {
-				throw new IllegalStateException(format("%s%s", ErrorState.CANNOT_BUILD, ErrorState.ERROR_RECIPIENTS));
+				throw new IllegalStateException(format("Cannot build an Email with no %s", ErrorState.ERROR_RECIPIENTS.asString()));
 			}
 		}
 
