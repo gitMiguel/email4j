@@ -11,7 +11,7 @@
 
     <properties>
         <javaMailVersion>1.6.0</javaMailVersion>
-        <guavaVersion>23.5-jre</guavaVersion>
+        <guavaVersion>24.1.1-jre</guavaVersion>
         <icegreenVersion>1.5.6</icegreenVersion>
         <junitVintageVersion>5.1.0-M1</junitVintageVersion>
         <mockitoVersion>2.13.0</mockitoVersion>
